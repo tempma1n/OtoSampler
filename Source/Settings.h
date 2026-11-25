@@ -5,7 +5,7 @@
 namespace oto
 {
 // UI preferences shared by every instance and every project.
-// Stored in the user's application data folder (Windows: %APPDATA%\\OtoSampler\\OtoSampler.settings).
+// Stored in the user's application data folder (Windows: %APPDATA%\\OtoSampler\\OtoSampler.settings, macOS: ~/Library/Application Support/OtoSampler/OtoSampler.settings).
 struct UiSettings
 {
     bool  dark = false;

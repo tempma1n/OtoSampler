@@ -6,7 +6,8 @@
  
 ## 導入
 リリースから.vst3をダウンロードしVST3フォルダに入れてください  
-今のところWindowsのみ対応です  
+macOSは.vst3を ~/Library/Audio/Plug-Ins/VST3 に .componentを ~/Library/Audio/Plug-Ins/Components に入れてください  
+macOSで読み込めない場合はターミナルで xattr -cr "Oto Sampler.vst3" や codesign --force --deep --sign - "Oto Sampler.vst3" を実行してください  
 
 ## 各種機能(大雑把)
 Formant Hold フォルマント保持   
@@ -22,7 +23,7 @@ OSC addで3基まで追加可能 右クリックでコンテキストメニュ�
 ## ショートカット
 ノブ上でダブルクリックで数値を初期化  
 波形上で左クリック サンプルを再生  
-波形上で左クリック+Ctrl 狭いループをクリック箇所に追加(ループ有効)  
+波形上で左クリック+Ctrl(macOSはCmd) 狭いループをクリック箇所に追加(ループ有効)  
 ピッチノブでShiftを押しながら回すとオクターブ単位でピッチの数値を変更  
 Ctrl+C OSCの数値を全てコピー  
 Ctrl+V OSCの数値を違うOSCに全て貼り付け  

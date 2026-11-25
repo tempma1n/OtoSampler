@@ -122,7 +122,11 @@ public:
                     + (s.channels.size() > 1 ? "Stereo" : "Mono") + "   "
                     + juce::String ((int) std::count (s.map.voiced.begin(), s.map.voiced.end(), (uint8_t) 1)) + " pitch marks",
                     getLocalBounds().withTrimmedLeft (16).withTrimmedBottom (4), juce::Justification::bottomLeft);
+#if JUCE_MAC
+        g.drawText ("S start   L / R sustain loop   Cmd+click narrow loop + on   Click: set Start + play", getLocalBounds().withTrimmedRight (16).withTrimmedBottom (4), juce::Justification::bottomRight);
+#else
         g.drawText ("S start   L / R sustain loop   Ctrl+click narrow loop + on   Click: set Start + play", getLocalBounds().withTrimmedRight (16).withTrimmedBottom (4), juce::Justification::bottomRight);
+#endif
     }
 
     void mouseMove (const juce::MouseEvent& e) override

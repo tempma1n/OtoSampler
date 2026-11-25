@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# macOS & Build artifacts
+.DS_Store
+build/
+dist/
+build_log.txt
+*.vst3/
+*.component/

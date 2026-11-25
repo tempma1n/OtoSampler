@@ -69,7 +69,12 @@ inline const Palette& pal()
 
 inline juce::Font font (float h, bool bold = false)
 {
-    return juce::Font (juce::FontOptions (h, bold ? juce::Font::bold : juce::Font::plain).withName ("Segoe UI"));
+    const auto opts = juce::FontOptions (h, bold ? juce::Font::bold : juce::Font::plain);
+#if JUCE_WINDOWS
+    return juce::Font (opts.withName ("Segoe UI"));
+#else
+    return juce::Font (opts.withName (juce::Font::getDefaultSansSerifFontName()));
+#endif
 }
 
 inline bool& animationsEnabled() { static bool a = true; return a; }

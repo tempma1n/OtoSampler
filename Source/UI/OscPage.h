@@ -71,11 +71,13 @@ public:
     void openFileChooser()
     {
         chooser = std::make_unique<juce::FileChooser> ("Select a sample", juce::File(), "*.wav;*.aif;*.aiff;*.flac;*.mp3;*.ogg");
+        juce::Component::SafePointer<OscPage> safe (this);
         chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
-                              [this] (const juce::FileChooser& fc)
+                              [safe] (const juce::FileChooser& fc)
                               {
+                                  if (safe == nullptr) return;
                                   const auto f = fc.getResult();
-                                  if (f.existsAsFile()) proc.osc (idx).loadSampleFromFile (f);
+                                  if (f.existsAsFile()) safe->proc.osc (safe->idx).loadSampleFromFile (f);
                               });
     }
 

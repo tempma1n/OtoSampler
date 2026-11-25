@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 cmake_minimum_required(VERSION 3.25)
 
+if(APPLE AND NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0" CACHE STRING "Minimum macOS deployment version")
+endif()
+
 project(OtoSampler VERSION 2.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -10,7 +14,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Static CRT: the plugin has no dependency on the VC++ redistributable
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-option(OTO_COPY_AFTER_BUILD "Copy the VST3 to %CommonProgramFiles%/VST3 after build (needs admin rights)" OFF)
+option(OTO_COPY_AFTER_BUILD "Copy built plugins to the plugin folder after build" OFF)
+option(OTO_BUILD_AU "Build an Audio Unit (AU) plugin on macOS" ON)
 option(OTO_BUILD_STANDALONE "Also build a Standalone app (handy for testing without a DAW)" ON)
 # 8.0.14 or newer: shallower build tree (Windows MAX_PATH) and Visual Studio 2026 support
 set(OTO_JUCE_TAG "8.0.14" CACHE STRING "JUCE git tag to fetch")
@@ -33,6 +38,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(JUCE)
 
 set(OTO_FORMATS VST3)
+if(APPLE AND OTO_BUILD_AU)
+    list(APPEND OTO_FORMATS AU)
+endif()
 if(OTO_BUILD_STANDALONE)
     list(APPEND OTO_FORMATS Standalone)
 endif()
@@ -50,6 +58,7 @@ juce_add_plugin(OtoSampler
     IS_MIDI_EFFECT              FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     VST3_CATEGORIES             Instrument Sampler
+    AU_MAIN_TYPE                kAudioUnitType_MusicDevice
     COPY_PLUGIN_AFTER_BUILD     ${OTO_COPY_AFTER_BUILD}
 )
 

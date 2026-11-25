@@ -235,7 +235,11 @@ bool OtoEditor::keyPressed (const juce::KeyPress& k)
     if (is ('c', 3))       idx = 0;
     else if (is ('v', 22)) idx = 1;
     else if (is ('d', 4))  idx = 2;
+#if JUCE_MAC
+    else if (! mods.isCommandDown() && (k == juce::KeyPress::deleteKey || k == juce::KeyPress::backspaceKey)) idx = 3;
+#else
     else if (! mods.isCommandDown() && k == juce::KeyPress::deleteKey) idx = 3;
+#endif
     if (idx < 0) return false;
 
     keyHandledAt = juce::Time::getMillisecondCounter();
@@ -262,7 +266,18 @@ void OtoEditor::pollShortcuts()
                         && dynamic_cast<juce::TextEditor*> (juce::Component::getCurrentlyFocusedComponent()) == nullptr;
     const auto mods = juce::ModifierKeys::getCurrentModifiersRealtime();
 
-    if (heldIdx >= 0 && ! juce::KeyPress::isKeyCurrentlyDown (watch[(size_t) heldIdx].key))
+    auto isWatchKeyDown = [&] (int i)
+    {
+        if (juce::KeyPress::isKeyCurrentlyDown (watch[(size_t) i].key))
+            return true;
+#if JUCE_MAC
+        if (i == 3 && juce::KeyPress::isKeyCurrentlyDown (juce::KeyPress::backspaceKey))
+            return true;
+#endif
+        return false;
+    };
+
+    if (heldIdx >= 0 && ! isWatchKeyDown (heldIdx))
         heldIdx = -1;                    // the key was released: the next press counts again
 
     for (size_t i = 0; i < watch.size(); ++i)
@@ -271,7 +286,7 @@ void OtoEditor::pollShortcuts()
         const bool isDelete = i == 3;
         const bool combo = isDelete ? ! mods.isCommandDown()
                                     : (mods.isCommandDown() && ! mods.isShiftDown() && ! mods.isAltDown());
-        const bool down = active && combo && juce::KeyPress::isKeyCurrentlyDown (w.key);
+        const bool down = active && combo && isWatchKeyDown ((int) i);
         if (down && ! w.down) { w.pending = true; w.edgeAt = now; }
         w.down = down;
 
@@ -444,7 +459,12 @@ void OtoEditor::paintCanvas (juce::Graphics& g)
         const auto r = juce::Rectangle<int> (440, 62, juce::jmax (10, canvas.getWidth() - 440 - 20), 40);
         g.setFont (font (12.5f, showStatus));
         g.setColour (showStatus ? Pl.primary : Pl.outline);
-        g.drawText (showStatus ? status : juce::String ("Right-click an OSC tab, or Ctrl+C  Ctrl+V  Ctrl+D  Del"),
+#if JUCE_MAC
+        const juce::String hint ("Right-click an OSC tab, or Cmd+C  Cmd+V  Cmd+D  Del");
+#else
+        const juce::String hint ("Right-click an OSC tab, or Ctrl+C  Ctrl+V  Ctrl+D  Del");
+#endif
+        g.drawText (showStatus ? status : hint,
                     r, juce::Justification::centredRight, true);
     }
 }

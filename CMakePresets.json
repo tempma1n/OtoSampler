@@ -21,12 +21,53 @@
       "generator": "Visual Studio 17 2022",
       "architecture": { "value": "x64", "strategy": "set" },
       "binaryDir": "$env{SystemDrive}/oto_build/${sourceDirName}"
+    },
+    {
+      "name": "macos",
+      "displayName": "macOS (Native, Ninja)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/macos",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "12.0"
+      }
+    },
+    {
+      "name": "macos-universal",
+      "displayName": "macOS Universal (arm64 + x86_64, Ninja)",
+      "inherits": "macos",
+      "binaryDir": "${sourceDir}/build/macos-universal",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "arm64;x86_64"
+      }
+    },
+    {
+      "name": "macos-xcode",
+      "displayName": "macOS (Xcode)",
+      "generator": "Xcode",
+      "binaryDir": "${sourceDir}/build/xcode",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" },
+      "cacheVariables": {
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "12.0"
+      }
+    },
+    {
+      "name": "macos-install",
+      "displayName": "macOS Universal + copy VST3/AU after build",
+      "inherits": "macos-universal",
+      "cacheVariables": {
+        "OTO_COPY_AFTER_BUILD": "ON"
+      }
     }
   ],
   "buildPresets": [
     { "name": "release", "configurePreset": "vs2026", "configuration": "Release" },
     { "name": "debug",   "configurePreset": "vs2026", "configuration": "Debug" },
     { "name": "release-install", "configurePreset": "vs2026-install", "configuration": "Release" },
-    { "name": "release-vs2022", "configurePreset": "vs2022", "configuration": "Release" }
+    { "name": "release-vs2022", "configurePreset": "vs2022", "configuration": "Release" },
+    { "name": "macos-release", "configurePreset": "macos", "configuration": "Release" },
+    { "name": "macos-universal-release", "configurePreset": "macos-universal", "configuration": "Release" },
+    { "name": "macos-xcode-release", "configurePreset": "macos-xcode", "configuration": "Release" }
   ]
 }
